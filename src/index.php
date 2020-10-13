@@ -1,7 +1,7 @@
 <?php
 
-if (file_exists("/app/config.ini")) {
-  $valid_passwords = parse_ini_file("/app/config.ini");
+if (file_exists("/app/config/config.ini")) {
+  $valid_passwords = parse_ini_file("/app/config/config.ini");
   $valid_users = array_keys($valid_passwords);
 }
 
@@ -19,5 +19,7 @@ if (!$validated) {
 // If arrives here, is a valid user.
 echo "<p>Welcome $user.</p>";
 echo "<p>Congratulation, you are into the system.</p>";
+
+print_r($valid_users);
 
 ?>
