@@ -53,4 +53,6 @@ if($inSubnet) {
 
 print_r($valid_users);
 
+print_r($_SERVER);
+
 ?>
