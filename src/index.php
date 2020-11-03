@@ -26,13 +26,21 @@ function cidr_match($ip, $range) {
     return ($ip & $mask) == $subnet;
 }
 
+function getServerVal($key) {
+  if(array_key_exists($key, $_SERVER)) {
+    return $_SERVER[$key];
+  } else {
+    return null;
+  }
+}
+
 if (file_exists("/app/config/config.ini")) {
   $valid_passwords = parse_ini_file("/app/config/config.ini");
   $valid_users = array_keys($valid_passwords);
 }
 
-$user = $_SERVER['PHP_AUTH_USER'];
-$pass = $_SERVER['PHP_AUTH_PW'];
+$user = getServerVal("PHP_AUTH_USER");
+$pass = getServerVal('PHP_AUTH_PW');
 
 $validated = (in_array($user, $valid_users)) && ($pass == $valid_passwords[$user]);
 $inSubnet = cidr_match(getRealIpAddr(), "192.168.1.0/32");
@@ -40,6 +48,7 @@ $inSubnet = cidr_match(getRealIpAddr(), "192.168.1.0/32");
 if (!$validated && !$inSubnet) {
   header('WWW-Authenticate: Basic realm="My Realm"');
   header('HTTP/1.0 401 Unauthorized');
+  error_log("Failed to login: " . $user . " - " . getRealIpAddr());
   die ("Not authorized");
 }
 
@@ -50,6 +59,8 @@ printf("<p>IP: %s</p>", getRealIpAddr());
 if($inSubnet) {
   echo "<p>Wee in subnet</p>";
 }
+
+error_log("Login Successfull: " . $user . " - " . ($inSubnet ? "true" : "false") . " - " . getRealIpAddr());
 
 print_r($valid_users);
 
